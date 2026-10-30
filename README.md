@@ -1,6 +1,8 @@
-# House Trips (working name)
+# Guidocasa
 
-Private trip planner for house hunting in Italy. Read `CLAUDE.md` for product rules and `BUILD_BRIEF.md` for the current phase.
+Italy house-buyer app. Buyers paste listing links, the service locates the house, and buyers get private drive-by routes for houses they have unlocked with credits. Scouting is offered only in Piemonte.
+
+Read `CLAUDE.md` for product rules and `BUILD_BRIEF.md` for the current phase.
 
 ## Develop
 

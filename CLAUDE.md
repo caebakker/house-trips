@@ -2,9 +2,9 @@
 
 ## Product
 
-A private planner for people driving around Italy to look at houses for sale (working name, brand TBD).
+Guidocasa is an Italy house-buyer app. Buyers paste listing links, the service locates the house, and buyers get private drive-by routes for houses they have unlocked with credits. Scouting is offered only in Piemonte.
 
-Buyers paste listing links. We locate each property (AI pre-check plus a manual check by Charlotte), then the app builds a realistic day-by-day route around daylight, lunch closures, accommodation and agent appointments. If a house looks good from the road, one tap sends the listing agent a structured lead.
+We locate each property with an AI pre-check plus a manual check by Charlotte, then the app builds a realistic day-by-day route around daylight, lunch closures, accommodation and agent appointments. If a house looks good from the road, one tap sends the listing agent a structured lead.
 
 - Product works for all of Italy. Marketing starts in Piemonte.
 - Separate product from Piemonte Property Partners (PPP), which is the upgrade path for buyers wanting full help.
