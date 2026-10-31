@@ -10,7 +10,12 @@ Read `CLAUDE.md` for product rules and `BUILD_BRIEF.md` for the current phase.
 cp .env.example .env.local   # fill in Supabase URL and publishable key
 npm install
 npm run dev
+npm test
 ```
+
+`VITE_MAP_STYLE_URL` is optional. When it is empty the map uses OpenFreeMap Bright, an OpenStreetMap vector street style with no API key. Point it at another street style when you change provider. Do not point it at satellite imagery.
+
+The comune autocomplete uses a derived ISTAT dataset. Source and licence: `src/data/COMUNI.md`.
 
 ## Database
 
