@@ -9,6 +9,9 @@ import { m } from './i18n/t'
 const TripDetail = lazy(() => import('./pages/TripDetail'))
 const TripFormPage = lazy(() => import('./pages/TripFormPage'))
 const ListingFormPage = lazy(() => import('./pages/ListingFormPage'))
+const AdminQueue = lazy(() => import('./pages/AdminQueue'))
+const AdminCredits = lazy(() => import('./pages/AdminCredits'))
+const DevPreview = import.meta.env.DEV ? lazy(() => import('./dev/M2Preview')) : null
 
 function RequireAuth({ children }: { children: ReactNode }) {
   const { session, loading } = useAuth()
@@ -77,6 +80,23 @@ export default function App() {
                 </RequireAuth>
               }
             />
+            <Route
+              path="/admin/queue"
+              element={
+                <RequireAuth>
+                  <AdminQueue />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/admin/credits"
+              element={
+                <RequireAuth>
+                  <AdminCredits />
+                </RequireAuth>
+              }
+            />
+            {DevPreview && <Route path="/dev/m2" element={<DevPreview />} />}
             <Route path="*" element={<Navigate to="/trips" replace />} />
           </Routes>
         </Suspense>

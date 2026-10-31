@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "test": "vitest run",
+    "test:rls": "bash scripts/rls-m2.sh",
     "preview": "vite preview"
   },
   "dependencies": {
