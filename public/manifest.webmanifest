@@ -1,6 +1,7 @@
 {
-  "name": "House Trips",
-  "short_name": "House Trips",
+  "name": "Guidocasa",
+  "short_name": "Guidocasa",
+  "description": "Italy house-buyer app. Paste listing links, unlock houses with credits, and get a private drive-by route. Scouting is offered only in Piemonte.",
   "start_url": "/trips",
   "display": "standalone",
   "background_color": "#ffffff",

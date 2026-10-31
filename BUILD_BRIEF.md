@@ -1,5 +1,7 @@
 # Build brief: Phase 1 (MVP, web)
 
+Product: Guidocasa. Italy house-buyer app. Buyers paste listing links, the service locates the house, and buyers get private drive-by routes for houses they have unlocked with credits. Scouting is offered only in Piemonte.
+
 Goal: prove that buyers will pay to have their shortlist located and turned into a workable trip.
 
 Read `CLAUDE.md` first. Build milestone by milestone; each ends deployed on Netlify and demoable.
@@ -92,6 +94,6 @@ Read `CLAUDE.md` first. Build milestone by milestone; each ends deployed on Netl
 AI pre-check, GPS check-in, accommodation suggestions, lunch stop suggestions, partner sharing UI, blog, iOS app, professional directory.
 
 ## Open questions
-- Product name and domain
+- Domain for Guidocasa
 - Whether to read basic metadata (title, price) from a pasted URL, given portal terms; default for now is manual entry
 - Orthophoto sources and licences outside Piemonte

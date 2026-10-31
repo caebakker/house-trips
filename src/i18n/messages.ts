@@ -2,7 +2,7 @@
 // Dutch and Italian will be added as sibling objects with the same keys.
 
 const en = {
-  appName: 'House Trips',
+  appName: 'Guidocasa',
   signIn: {
     title: 'Plan your house-hunting trip',
     intro: 'Enter your email and we will send you a link to sign in. No password needed.',
