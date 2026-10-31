@@ -31,6 +31,7 @@ export type TripListing = {
   url: string
   canonicalUrl: string
   portal: string | null
+  status: 'approximate' | 'address_given' | 'check_requested' | 'verified' | 'not_found'
   createdAt: string
 }
 
@@ -167,6 +168,7 @@ type TripListingQueryRow = {
   agent_name: string | null
   agent_email: string | null
   agent_phone: string | null
+  status: TripListing['status']
   created_at: string
   listings: ListingEmbed | ListingEmbed[] | null
 }
@@ -188,6 +190,7 @@ function toListing(row: TripListingQueryRow): TripListing | null {
     agentName: row.agent_name,
     agentEmail: row.agent_email,
     agentPhone: row.agent_phone,
+    status: row.status,
     url: listing.url,
     canonicalUrl: listing.canonical_url,
     portal: listing.portal,
@@ -196,7 +199,7 @@ function toListing(row: TripListingQueryRow): TripListing | null {
 }
 
 const LISTING_COLUMNS =
-  'id, priority, comune_istat, comune_name, approx_lat, approx_lng, approx_radius_m, given_address, given_lat, given_lng, agent_name, agent_email, agent_phone, created_at, listings(url, canonical_url, portal)'
+  'id, priority, comune_istat, comune_name, approx_lat, approx_lng, approx_radius_m, given_address, given_lat, given_lng, agent_name, agent_email, agent_phone, status, created_at, listings(url, canonical_url, portal)'
 
 export async function listTripListings(tripId: string): Promise<TripListing[]> {
   const { data, error } = await supabase

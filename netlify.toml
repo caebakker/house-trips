@@ -2,6 +2,13 @@
   command = "npm run build"
   publish = "dist"
 
+# Cadastral tiles. Must sit above the SPA fallback or the map gets index.html.
+[[redirects]]
+  from = "/api/cadastral-wms"
+  to = "/.netlify/functions/cadastral-wms"
+  status = 200
+  force = true
+
 # SPA: let React Router handle every path.
 [[redirects]]
   from = "/*"
