@@ -69,7 +69,7 @@ const queue: QueueItem[] = [
     givenLat: null,
     givenLng: null,
     listingUrl: 'https://example.com/listing-bra',
-    portal: null,
+    portal: 'other',
     linkedPropertyId: 'house-1',
     linkedLat: 44.699,
     linkedLng: 8.034,

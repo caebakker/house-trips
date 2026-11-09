@@ -14,13 +14,114 @@ export type Database = {
   }
   public: {
     Tables: {
+      credit_ledger: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          delta: number
+          id: string
+          note: string | null
+          reason: Database["public"]["Enums"]["credit_reason"]
+          stripe_payment_intent: string | null
+          trip_listing_id: string | null
+          user_id: string
+          verification_request_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          delta: number
+          id?: string
+          note?: string | null
+          reason: Database["public"]["Enums"]["credit_reason"]
+          stripe_payment_intent?: string | null
+          trip_listing_id?: string | null
+          user_id: string
+          verification_request_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          delta?: number
+          id?: string
+          note?: string | null
+          reason?: Database["public"]["Enums"]["credit_reason"]
+          stripe_payment_intent?: string | null
+          trip_listing_id?: string | null
+          user_id?: string
+          verification_request_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_ledger_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "credit_ledger_trip_listing_id_fkey"
+            columns: ["trip_listing_id"]
+            isOneToOne: false
+            referencedRelation: "trip_listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "credit_ledger_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "credit_ledger_verification_request_id_fkey"
+            columns: ["verification_request_id"]
+            isOneToOne: false
+            referencedRelation: "verification_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      listing_properties: {
+        Row: {
+          created_at: string
+          listing_id: string
+          property_id: string
+        }
+        Insert: {
+          created_at?: string
+          listing_id: string
+          property_id: string
+        }
+        Update: {
+          created_at?: string
+          listing_id?: string
+          property_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_properties_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: true
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "listing_properties_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       listings: {
         Row: {
           canonical_url: string
           created_at: string
           created_by: string | null
           id: string
-          portal: string | null
+          portal: string
           url: string
         }
         Insert: {
@@ -28,7 +129,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           id?: string
-          portal?: string | null
+          portal?: string
           url: string
         }
         Update: {
@@ -36,7 +137,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           id?: string
-          portal?: string | null
+          portal?: string
           url?: string
         }
         Relationships: [
@@ -45,6 +146,60 @@ export type Database = {
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notification_outbox: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          kind: string
+          sent_at: string | null
+          status: string
+          subject: string
+          to_email: string
+          user_id: string
+          verification_request_id: string | null
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          kind: string
+          sent_at?: string | null
+          status?: string
+          subject: string
+          to_email: string
+          user_id: string
+          verification_request_id?: string | null
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          sent_at?: string | null
+          status?: string
+          subject?: string
+          to_email?: string
+          user_id?: string
+          verification_request_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_outbox_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notification_outbox_verification_request_id_fkey"
+            columns: ["verification_request_id"]
+            isOneToOne: false
+            referencedRelation: "verification_requests"
             referencedColumns: ["id"]
           },
         ]
@@ -75,6 +230,64 @@ export type Database = {
           role?: Database["public"]["Enums"]["user_role"]
         }
         Relationships: []
+      }
+      properties: {
+        Row: {
+          created_at: string
+          id: string
+          source: Database["public"]["Enums"]["property_source"]
+          verified_at: string
+          verified_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          source?: Database["public"]["Enums"]["property_source"]
+          verified_at?: string
+          verified_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          source?: Database["public"]["Enums"]["property_source"]
+          verified_at?: string
+          verified_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "properties_verified_by_fkey"
+            columns: ["verified_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      property_locations: {
+        Row: {
+          lat: number
+          lng: number
+          property_id: string
+        }
+        Insert: {
+          lat: number
+          lng: number
+          property_id: string
+        }
+        Update: {
+          lat?: number
+          lng?: number
+          property_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_locations_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: true
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       trip_listings: {
         Row: {
@@ -243,144 +456,6 @@ export type Database = {
           },
         ]
       }
-      credit_ledger: {
-        Row: {
-          created_at: string
-          created_by: string | null
-          delta: number
-          id: string
-          note: string | null
-          reason: Database["public"]["Enums"]["credit_reason"]
-          stripe_payment_intent: string | null
-          trip_listing_id: string | null
-          user_id: string
-          verification_request_id: string | null
-        }
-        Insert: {
-          created_at?: string
-          created_by?: string | null
-          delta: number
-          id?: string
-          note?: string | null
-          reason: Database["public"]["Enums"]["credit_reason"]
-          stripe_payment_intent?: string | null
-          trip_listing_id?: string | null
-          user_id: string
-          verification_request_id?: string | null
-        }
-        Update: {
-          created_at?: string
-          created_by?: string | null
-          delta?: number
-          id?: string
-          note?: string | null
-          reason?: Database["public"]["Enums"]["credit_reason"]
-          stripe_payment_intent?: string | null
-          trip_listing_id?: string | null
-          user_id?: string
-          verification_request_id?: string | null
-        }
-        Relationships: []
-      }
-      listing_properties: {
-        Row: {
-          created_at: string
-          listing_id: string
-          property_id: string
-        }
-        Insert: {
-          created_at?: string
-          listing_id: string
-          property_id: string
-        }
-        Update: {
-          created_at?: string
-          listing_id?: string
-          property_id?: string
-        }
-        Relationships: []
-      }
-      notification_outbox: {
-        Row: {
-          body: string
-          created_at: string
-          id: string
-          kind: string
-          sent_at: string | null
-          status: string
-          subject: string
-          to_email: string
-          user_id: string
-          verification_request_id: string | null
-        }
-        Insert: {
-          body: string
-          created_at?: string
-          id?: string
-          kind: string
-          sent_at?: string | null
-          status?: string
-          subject: string
-          to_email: string
-          user_id: string
-          verification_request_id?: string | null
-        }
-        Update: {
-          body?: string
-          created_at?: string
-          id?: string
-          kind?: string
-          sent_at?: string | null
-          status?: string
-          subject?: string
-          to_email?: string
-          user_id?: string
-          verification_request_id?: string | null
-        }
-        Relationships: []
-      }
-      properties: {
-        Row: {
-          created_at: string
-          id: string
-          source: Database["public"]["Enums"]["property_source"]
-          verified_at: string
-          verified_by: string | null
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          source?: Database["public"]["Enums"]["property_source"]
-          verified_at?: string
-          verified_by?: string | null
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          source?: Database["public"]["Enums"]["property_source"]
-          verified_at?: string
-          verified_by?: string | null
-        }
-        Relationships: []
-      }
-      property_locations: {
-        Row: {
-          lat: number
-          lng: number
-          property_id: string
-        }
-        Insert: {
-          lat: number
-          lng: number
-          property_id: string
-        }
-        Update: {
-          lat?: number
-          lng?: number
-          property_id?: string
-        }
-        Relationships: []
-      }
       verification_requests: {
         Row: {
           admin_notes: string | null
@@ -418,7 +493,36 @@ export type Database = {
           status?: Database["public"]["Enums"]["verification_status"]
           trip_listing_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "verification_requests_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "verification_requests_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "verification_requests_requested_by_fkey"
+            columns: ["requested_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "verification_requests_trip_listing_id_fkey"
+            columns: ["trip_listing_id"]
+            isOneToOne: false
+            referencedRelation: "trip_listings"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -433,6 +537,10 @@ export type Database = {
       admin_recent_grants: { Args: never; Returns: Json }
       admin_verification_queue: { Args: never; Returns: Json }
       credit_balance: { Args: never; Returns: number }
+      enqueue_verification_email: {
+        Args: { p_kind: string; p_request_id: string }
+        Returns: undefined
+      }
       ensure_listing: {
         Args: { p_canonical_url: string; p_portal: string; p_url: string }
         Returns: string
@@ -444,7 +552,10 @@ export type Database = {
       is_admin: { Args: never; Returns: boolean }
       is_trip_member: { Args: { p_trip_id: string }; Returns: boolean }
       is_trip_owner: { Args: { p_trip_id: string }; Returns: boolean }
-      request_verification: { Args: { p_trip_listing_id: string }; Returns: string }
+      request_verification: {
+        Args: { p_trip_listing_id: string }
+        Returns: string
+      }
       resolve_verification: {
         Args: {
           p_lat?: number

@@ -1,4 +1,4 @@
-export type Portal = 'immobiliare' | 'idealista' | 'casa' | ''
+export type Portal = 'immobiliare' | 'idealista' | 'casa' | 'other'
 
 export type CanonicalListing = {
   /** Clean URL stored on the listing and opened from the trip. */
@@ -98,7 +98,8 @@ function genericCanonical(parsed: URL): string {
 /**
  * Stable identity for a pasted listing link.
  * Portal listings collapse to the public id. Everything else loses the
- * fragment, tracking parameters, default port and a leading www.
+ * fragment, tracking parameters, default port and a leading www, and is
+ * recorded as portal "other".
  */
 export function canonicaliseListingUrl(input: string): CanonicalListing | null {
   const trimmed = input.trim()
@@ -144,5 +145,5 @@ export function canonicaliseListingUrl(input: string): CanonicalListing | null {
   }
 
   const canonicalUrl = genericCanonical(parsed)
-  return { url: canonicalUrl, canonicalUrl, portal: '' }
+  return { url: canonicalUrl, canonicalUrl, portal: 'other' }
 }

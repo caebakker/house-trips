@@ -30,7 +30,7 @@ export type TripListing = {
   agentPhone: string | null
   url: string
   canonicalUrl: string
-  portal: string | null
+  portal: string
   status: 'approximate' | 'address_given' | 'check_requested' | 'verified' | 'not_found'
   createdAt: string
 }
@@ -63,7 +63,7 @@ type TripRow = Pick<
 type ListingEmbed = {
   url: string
   canonical_url: string
-  portal: string | null
+  portal: string
 }
 
 function countOf(value: unknown): number {
