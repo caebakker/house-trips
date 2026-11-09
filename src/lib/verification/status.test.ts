@@ -22,6 +22,9 @@ describe('buyerVerificationStatus', () => {
   it('shows found and not found from the latest closed check', () => {
     expect(buyerVerificationStatus('verified', [])).toBe('found')
     expect(
+      buyerVerificationStatus('unavailable', [{ status: 'found', createdAt: '2026-03-01T00:00:00Z' }]),
+    ).toBe('unavailable')
+    expect(
       buyerVerificationStatus('not_found', [
         { status: 'not_found', createdAt: '2026-03-01T00:00:00Z' },
         { status: 'not_found', createdAt: '2026-01-01T00:00:00Z' },
@@ -50,6 +53,7 @@ describe('verificationFailure', () => {
   it('recognises a missing credit', () => {
     expect(verificationFailure('no credits')).toBe('no_credits')
     expect(verificationFailure('already requested')).toBe('already')
+    expect(verificationFailure('cannot locate')).toBe('unavailable')
     expect(verificationFailure('something else')).toBe('save')
   })
 })

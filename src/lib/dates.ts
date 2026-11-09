@@ -38,6 +38,19 @@ export function formatDayHeading(isoDate: string): string {
   }).format(new Date(`${isoDate}T12:00:00Z`))
 }
 
+/** UK English date and 24-hour time in Europe/Rome. */
+export function formatRomeDateTime(iso: string): string {
+  return new Intl.DateTimeFormat('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+    timeZone: 'Europe/Rome',
+  }).format(new Date(iso))
+}
+
 export function formatHours(minutes: number): string {
   const hours = minutes / 60
   return Number.isInteger(hours) ? String(hours) : hours.toFixed(1)

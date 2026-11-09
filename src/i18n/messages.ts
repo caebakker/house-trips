@@ -19,8 +19,45 @@ const en = {
   },
   terms: {
     title: 'Terms',
-    intro: 'This page says what Guidocasa does. The full terms will be published before launch.',
+    intro:
+      'This page says what Guidocasa does with a listing you add, and how an owner can ask us to stop locating a property. The full terms will be published before launch.',
     noticeHeading: 'What Guidocasa does',
+    privacyHeading: 'Locations',
+    privacy:
+      'A buyer pastes a link to a public listing. We try to locate that house so the buyer can drive past it. We show a pin only to a buyer who has unlocked that house. We never show a written address, and we never show an owner name.',
+    privacyMore:
+      'The shaded area on a trip map is around the comune centre. It is not the house. For viewings, prices and the sale itself, the buyer contacts the agent named on the listing.',
+    optOutHeading: 'If you own the property',
+    optOut:
+      'Owners sometimes keep the address off the listing on purpose. If you own the property, or the owner has authorised you, you can ask us to stop locating it and to remove a location we already hold. You do not need an account.',
+    optOutLink: 'Ask us to stop locating a property',
+  },
+  optOut: {
+    title: 'Ask us to stop locating a property',
+    intro:
+      'If this house is yours, or the owner has authorised you, tell us and we will stop locating it. Paste the public listing link. We do not need your name, and we do not need the street address.',
+    urls: 'Listing links',
+    urlsHint: 'One link on each line. The same link a buyer would paste is enough. You can send up to 10.',
+    comune: 'Comune, if you know it',
+    comuneHint: 'Optional. A town or city name helps us match the listing. Do not type the street address.',
+    email: 'Email, if you want a note from us',
+    emailHint: 'Optional. We use it only to tell you we have dealt with the request, and for nothing else.',
+    confirm: 'I am the owner of this property, or the owner has authorised me to make this request.',
+    submit: 'Send request',
+    sending: 'Sending…',
+    successTitle: 'Request received',
+    success:
+      'Thank you. We have your request and will stop locating this property where the listing matches. You do not need to do anything else.',
+    errors: {
+      urls: 'Add at least one listing link, starting with http:// or https://.',
+      url: 'Check this link: {url}',
+      tooMany: 'You can send up to 10 links at a time.',
+      comune: 'Keep the comune to 80 characters.',
+      email: 'Check the email address, or leave it blank.',
+      confirm: 'Tick the box to confirm you are the owner, or that the owner has authorised you.',
+      slow: 'Please wait a little, then send the request again.',
+      save: 'We could not send that. Please try again.',
+    },
   },
   trips: {
     title: 'My trips',
@@ -207,6 +244,7 @@ const en = {
     requested: 'Requested. We will email you when the check is done.',
     found: 'Location found.',
     notFound: 'We could not find this one. Your credit is back on your balance.',
+    unavailable: "This property can't be located.",
     cost: 'This uses 1 credit. You have {count}.',
     costOne: 'This uses 1 credit. You have 1.',
     noCredits: 'You have no credits yet. We can add some for you.',
@@ -254,6 +292,26 @@ const en = {
     distance: '{label}, {distance}',
     jump: 'Request {current}, {comune}, {date}',
   },
+  optOutAdmin: {
+    title: 'Opt-out requests',
+    intro:
+      'Approving a request stops locating that listing and any house already linked to it. The stored pin is removed. An open check is closed as not found and the credit goes back. Buyers only see that the property cannot be located.',
+    empty: 'No opt-out requests waiting.',
+    approve: 'Approve',
+    reject: 'Reject',
+    working: 'Saving…',
+    approved: 'Approved. That property will not be located.',
+    rejected: 'Rejected. Nothing was changed.',
+    links: 'Listing links',
+    noComune: 'No comune given',
+    noEmail: 'No email given',
+    received: 'Received {when}',
+    unmatched: 'This link could not be matched, so it will be left out: {url}',
+    needMatch: 'None of these links can be matched. Reject the request, or ask them to send the listing link again.',
+    forbidden: 'This page is for the Guidocasa admin.',
+    loadError: 'We could not load opt-out requests.',
+    saveError: 'We could not save that. Please try again.',
+  },
   credits: {
     title: 'Credits',
     intro:
@@ -285,6 +343,7 @@ const en = {
     terms: 'Terms',
     trips: 'My trips',
     queue: 'Queue',
+    optOuts: 'Opt-outs',
     credits: 'Credits',
     creditOne: '1 credit',
     creditsCount: '{count} credits',
@@ -293,6 +352,10 @@ const en = {
     loading: 'Loading…',
     cancel: 'Cancel',
     tryAgain: 'Try again',
+  },
+  footer: {
+    terms: 'Terms',
+    optOut: 'Property opt-out',
   },
 }
 

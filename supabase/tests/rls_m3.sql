@@ -340,27 +340,32 @@ exception
     null;
 end $$;
 
--- Opt-out tables from 20261109123722. Created here so this branch can prove
--- the pin function hides them before that migration is on main. Same idea as
--- private.opted_out_properties and private.opted_out_urls, with force RLS.
+-- The seller opt-out migration creates these tables. If this test runs
+-- without that migration, build the same minimum shape the pin function reads.
 reset role;
 
-create table private.opted_out_properties (
-  property_id uuid primary key references public.properties (id) on delete cascade,
-  request_id uuid,
-  created_at timestamptz not null default now()
-);
+do $$
+begin
+  if to_regclass('private.opted_out_properties') is null then
+    create table private.opted_out_properties (
+      property_id uuid primary key references public.properties (id) on delete cascade,
+      request_id uuid,
+      created_at timestamptz not null default now()
+    );
+    alter table private.opted_out_properties enable row level security;
+    alter table private.opted_out_properties force row level security;
+  end if;
 
-create table private.opted_out_urls (
-  canonical_url text primary key,
-  request_id uuid,
-  created_at timestamptz not null default now()
-);
-
-alter table private.opted_out_properties enable row level security;
-alter table private.opted_out_properties force row level security;
-alter table private.opted_out_urls enable row level security;
-alter table private.opted_out_urls force row level security;
+  if to_regclass('private.opted_out_urls') is null then
+    create table private.opted_out_urls (
+      canonical_url text primary key,
+      request_id uuid,
+      created_at timestamptz not null default now()
+    );
+    alter table private.opted_out_urls enable row level security;
+    alter table private.opted_out_urls force row level security;
+  end if;
+end $$;
 
 insert into private.opted_out_properties (property_id)
 select lp.property_id

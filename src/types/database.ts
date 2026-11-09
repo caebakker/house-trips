@@ -160,7 +160,7 @@ export type Database = {
           status: string
           subject: string
           to_email: string
-          user_id: string
+          user_id: string | null
           verification_request_id: string | null
         }
         Insert: {
@@ -172,7 +172,7 @@ export type Database = {
           status?: string
           subject: string
           to_email: string
-          user_id: string
+          user_id?: string | null
           verification_request_id?: string | null
         }
         Update: {
@@ -184,7 +184,7 @@ export type Database = {
           status?: string
           subject?: string
           to_email?: string
-          user_id?: string
+          user_id?: string | null
           verification_request_id?: string | null
         }
         Relationships: [
@@ -610,6 +610,7 @@ export type Database = {
     }
     Functions: {
       admin_credit_balance: { Args: { p_email: string }; Returns: number }
+      admin_opt_out_queue: { Args: never; Returns: Json }
       admin_properties_near: {
         Args: { p_lat: number; p_listing_id?: string; p_lng: number }
         Returns: Json
@@ -624,7 +625,15 @@ export type Database = {
           trip_listing_id: string
         }[]
       }
+      close_verification_not_found: {
+        Args: { p_note?: string; p_request_id: string }
+        Returns: undefined
+      }
       credit_balance: { Args: never; Returns: number }
+      decide_seller_opt_out: {
+        Args: { p_canonical_urls?: string[]; p_decision: string; p_request_id: string }
+        Returns: Json
+      }
       enqueue_verification_email: {
         Args: { p_kind: string; p_request_id: string }
         Returns: undefined
@@ -659,6 +668,16 @@ export type Database = {
         }
         Returns: Json
       }
+      submit_seller_opt_out: {
+        Args: {
+          p_company?: string
+          p_comune?: string
+          p_confirmed: boolean
+          p_contact_email?: string
+          p_listing_urls: string[]
+        }
+        Returns: Json
+      }
     }
     Enums: {
       credit_reason: "purchase" | "unlock" | "refund" | "grant"
@@ -669,6 +688,7 @@ export type Database = {
         | "check_requested"
         | "verified"
         | "not_found"
+        | "unavailable"
       trip_member_role: "owner" | "partner"
       user_role: "buyer" | "admin"
       verification_status: "queued" | "in_review" | "found" | "not_found"
@@ -807,6 +827,7 @@ export const Constants = {
         "check_requested",
         "verified",
         "not_found",
+        "unavailable",
       ],
       trip_member_role: ["owner", "partner"],
       user_role: ["buyer", "admin"],

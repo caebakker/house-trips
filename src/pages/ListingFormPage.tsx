@@ -23,6 +23,7 @@ export default function ListingFormPage() {
     agentName: string
     agentEmail: string
     agentPhone: string
+    locationBlocked: boolean
   } | null>(null)
 
   useEffect(() => {
@@ -53,6 +54,7 @@ export default function ListingFormPage() {
             agentName: listing.agentName ?? '',
             agentEmail: listing.agentEmail ?? '',
             agentPhone: listing.agentPhone ?? '',
+            locationBlocked: listing.status === 'unavailable',
           })
         } else {
           setInitial({
@@ -64,6 +66,7 @@ export default function ListingFormPage() {
             agentName: '',
             agentEmail: '',
             agentPhone: '',
+            locationBlocked: false,
           })
         }
       })
@@ -144,6 +147,7 @@ export default function ListingFormPage() {
               initialAgentPhone={initial.agentPhone}
               submitting={submitting}
               formError={formError}
+              locationBlocked={initial.locationBlocked}
               onSubmit={onSubmit}
               onCancel={() => navigate(tripId ? `/trips/${tripId}` : '/trips')}
             />

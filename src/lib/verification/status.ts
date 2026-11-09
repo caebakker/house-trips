@@ -1,6 +1,6 @@
 export type VerificationDbStatus = 'queued' | 'in_review' | 'found' | 'not_found'
 
-export type BuyerVerificationStatus = 'none' | 'requested' | 'found' | 'not_found'
+export type BuyerVerificationStatus = 'none' | 'requested' | 'found' | 'not_found' | 'unavailable'
 
 export type VerificationStamp = {
   status: string
@@ -12,6 +12,7 @@ export function buyerVerificationStatus(
   listingStatus: string,
   rows: VerificationStamp[],
 ): BuyerVerificationStatus {
+  if (listingStatus === 'unavailable') return 'unavailable'
   if (listingStatus === 'verified') return 'found'
   const open = rows.find((row) => row.status === 'queued' || row.status === 'in_review')
   if (open) return 'requested'
@@ -22,8 +23,9 @@ export function buyerVerificationStatus(
   return 'none'
 }
 
-export function verificationFailure(message: string): 'no_credits' | 'already' | 'save' {
+export function verificationFailure(message: string): 'no_credits' | 'already' | 'unavailable' | 'save' {
   if (message.includes('no credits')) return 'no_credits'
+  if (message.includes('cannot locate')) return 'unavailable'
   if (message.includes('already requested') || message.includes('already found')) return 'already'
   return 'save'
 }
