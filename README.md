@@ -79,11 +79,11 @@ The comune autocomplete uses a derived ISTAT dataset. Source and licence: `src/d
 
 An owner, or someone they have authorised, can ask us to stop locating a property at `/privacy/opt-out`. No account is needed. Approve or reject the request at `/admin/opt-outs`.
 
-Approving removes the stored pin, closes an open location check as not found (the credit is refunded), and refuses later checks for that listing and for any house already linked to it. Buyers see "This property can't be located." If the requester left an email, a short note is queued in `notification_outbox` and is not sent.
+Approving removes the stored pin, closes an open check, and refunds the credit, including a buyer who had already unlocked the house. Buyers see "This property can't be located." Notices wait in `notification_outbox` and are not sent. An approved request can be restored from the same admin page. That does not put the pin back and does not charge anyone.
 
-The scheduler migration is already live as `20261109140801_trip_scheduler.sql`. Apply only the opt-out file after that:
+The opt-out migration is already live as version `20261109141746`. Apply only the follow-up:
 
-`supabase/migrations/20261109170000_seller_opt_out.sql`
+`supabase/migrations/20261109180000_opt_out_refine.sql`
 
 ## Database
 

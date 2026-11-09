@@ -362,6 +362,27 @@ begin
   if v_comune <> 'Alba' or v_email <> 'owner@example.com' then
     raise exception 'stored comune or email was not trimmed, got % %', v_comune, v_email;
   end if;
+
+  if not exists (
+    select 1 from private.seller_opt_out_requests
+    where contact_email = 'owner@example.com' and owner_confirmed is true
+  ) then
+    raise exception 'owner confirmation was not stored';
+  end if;
+end $$;
+
+do $$
+declare
+  v_args text;
+begin
+  select pg_get_function_arguments(p.oid) into v_args
+  from pg_proc p
+  join pg_namespace n on n.oid = p.pronamespace
+  where n.nspname = 'public' and p.proname = 'submit_seller_opt_out';
+
+  if v_args is null or position('p_confirmed boolean default' in lower(v_args)) > 0 then
+    raise exception 'confirmation argument is still optional: %', v_args;
+  end if;
 end $$;
 
 set role authenticated;
@@ -538,8 +559,8 @@ begin
   from public.credit_ledger
   where verification_request_id = current_setting('test.found')::uuid
     and reason = 'refund';
-  if n <> 0 then
-    raise exception 'a finished unlock was refunded';
+  if n <> 1 then
+    raise exception 'finished unlock was not refunded once, count %', n;
   end if;
 
   select user_id, body into v_user, b
@@ -559,6 +580,33 @@ begin
   end if;
   if position('not an estate agency' in b) = 0 then
     raise exception 'seller notice dropped the agency line';
+  end if;
+
+  select body into b
+  from public.notification_outbox
+  where kind = 'location_unavailable'
+    and verification_request_id = current_setting('test.found')::uuid;
+  if b is null
+     or position('no longer available' in b) = 0
+     or position('credit is back' in b) = 0 then
+    raise exception 'missing buyer notice for the finished unlock: %', b;
+  end if;
+  if position('opt-out' in lower(b)) > 0
+     or position('owner' in lower(b)) > 0
+     or position('look again' in lower(b)) > 0
+     or position('44.701111' in b) > 0
+     or position('Via Segreta' in b) > 0 then
+    raise exception 'buyer notice revealed too much: %', b;
+  end if;
+
+  select body into b
+  from public.notification_outbox
+  where verification_request_id = (
+    select id from public.verification_requests
+    where trip_listing_id = current_setting('test.tl_b')::uuid
+  );
+  if b is null or position('look again' in lower(b)) > 0 or position('no longer available' in b) = 0 then
+    raise exception 'open check still uses the look-again email: %', b;
   end if;
 end $$;
 
@@ -608,7 +656,7 @@ declare
   v_id uuid;
 begin
   v_balance := public.credit_balance();
-  if v_balance <> 1 then
+  if v_balance <> 2 then
     raise exception 'balance after refund is %', v_balance;
   end if;
 
@@ -660,7 +708,7 @@ begin
   end;
 
   v_balance := public.credit_balance();
-  if v_balance <> 1 then
+  if v_balance <> 2 then
     raise exception 'refused check changed the balance to %', v_balance;
   end if;
 
@@ -752,6 +800,90 @@ begin
 exception
   when insufficient_privilege then
     null;
+end $$;
+
+do $$
+begin
+  perform public.restore_seller_opt_out(current_setting('test.opt_request')::uuid);
+  raise exception 'buyer restored an opt-out';
+exception
+  when others then
+    if sqlerrm <> 'not allowed' then
+      raise;
+    end if;
+end $$;
+
+reset role;
+set role authenticated;
+select set_config('request.jwt.claim.sub', current_setting('test.optadmin'), false);
+
+select public.restore_seller_opt_out(current_setting('test.opt_request')::uuid);
+
+do $$
+begin
+  perform public.restore_seller_opt_out(current_setting('test.opt_request')::uuid);
+  raise exception 'restored twice';
+exception
+  when others then
+    if sqlerrm <> 'not approved' then
+      raise;
+    end if;
+end $$;
+
+reset role;
+
+do $$
+declare
+  n int;
+  st public.trip_listing_status;
+begin
+  if exists (
+    select 1 from private.opted_out_urls
+    where canonical_url = 'https://www.immobiliare.it/annunci/116128813'
+  ) then
+    raise exception 'restored url is still opted out';
+  end if;
+
+  select count(*) into n
+  from public.property_locations
+  where property_id = current_setting('test.property')::uuid;
+  if n <> 0 then
+    raise exception 'restore put a pin back';
+  end if;
+
+  select count(*) into n
+  from public.credit_ledger
+  where verification_request_id = current_setting('test.found')::uuid
+    and reason = 'refund';
+  if n <> 1 then
+    raise exception 'restore changed the refund, count %', n;
+  end if;
+
+  select status into st from public.trip_listings where id = current_setting('test.tl_a')::uuid;
+  if st <> 'approximate' then
+    raise exception 'restored stop is not locatable again, status %', st;
+  end if;
+
+  if (
+    select status from private.seller_opt_out_requests
+    where id = current_setting('test.opt_request')::uuid
+  ) <> 'restored' then
+    raise exception 'request was not marked restored';
+  end if;
+end $$;
+
+set role authenticated;
+select set_config('request.jwt.claim.sub', current_setting('test.nina'), false);
+
+do $$
+declare
+  v_before integer;
+begin
+  v_before := public.credit_balance();
+  perform public.request_verification(current_setting('test.tl_a')::uuid);
+  if public.credit_balance() <> v_before - 1 then
+    raise exception 'a new check after restore did not spend one credit';
+  end if;
 end $$;
 
 reset role;

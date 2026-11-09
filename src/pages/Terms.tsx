@@ -21,6 +21,7 @@ export default function Terms() {
         <p className="mt-3 text-base leading-relaxed text-stone-800">{m.terms.privacyMore}</p>
         <h2 className="mt-8 text-lg font-semibold text-stone-900">{m.terms.optOutHeading}</h2>
         <p className="mt-3 text-base leading-relaxed text-stone-800">{m.terms.optOut}</p>
+        <p className="mt-3 text-base leading-relaxed text-stone-800">{m.terms.optOutGoodFaith}</p>
         <Link to="/privacy/opt-out" className="mt-3 inline-block font-medium text-stone-900 underline">
           {m.terms.optOutLink}
         </Link>

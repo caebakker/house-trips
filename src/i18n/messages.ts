@@ -30,6 +30,8 @@ const en = {
     optOutHeading: 'If you own the property',
     optOut:
       'Owners sometimes keep the address off the listing on purpose. If you own the property, or the owner has authorised you, you can ask us to stop locating it and to remove a location we already hold. You do not need an account.',
+    optOutGoodFaith:
+      'We handle these requests in good faith. If a request turns out not to come from the owner, or from someone with their permission, we may restore the listing.',
     optOutLink: 'Ask us to stop locating a property',
   },
   optOut: {
@@ -42,7 +44,7 @@ const en = {
     comuneHint: 'Optional. A town or city name helps us match the listing. Do not type the street address.',
     email: 'Email, if you want a note from us',
     emailHint: 'Optional. We use it only to tell you we have dealt with the request, and for nothing else.',
-    confirm: 'I am the owner of this property, or the owner has authorised me to make this request.',
+    confirm: 'I confirm I am the owner of this property, or I have the owner\'s permission to make this request.',
     submit: 'Send request',
     sending: 'Sending…',
     successTitle: 'Request received',
@@ -54,7 +56,7 @@ const en = {
       tooMany: 'You can send up to 10 links at a time.',
       comune: 'Keep the comune to 80 characters.',
       email: 'Check the email address, or leave it blank.',
-      confirm: 'Tick the box to confirm you are the owner, or that the owner has authorised you.',
+      confirm: 'Tick the box to confirm you are the owner, or that you have the owner\'s permission.',
       slow: 'Please wait a little, then send the request again.',
       save: 'We could not send that. Please try again.',
     },
@@ -295,7 +297,13 @@ const en = {
   optOutAdmin: {
     title: 'Opt-out requests',
     intro:
-      'Approving a request stops locating that listing and any house already linked to it. The stored pin is removed. An open check is closed as not found and the credit goes back. Buyers only see that the property cannot be located.',
+      'Approving a request stops locating that listing and any house already linked to it. The stored pin is removed. Buyers who paid for that location get the credit back. Restoring a request lets us locate it again. Nobody is charged, and a removed pin is not put back.',
+    waiting: 'Waiting',
+    approvedHeading: 'Approved',
+    confirmed: 'They confirmed they are the owner, or that they have the owner\'s permission.',
+    restore: 'Restore listing',
+    restored: 'Restored. Buyers can ask us to locate it again. The old pin is not put back.',
+    restoreHint: 'Restoring does not charge anyone, and it does not put a removed pin back.',
     empty: 'No opt-out requests waiting.',
     approve: 'Approve',
     reject: 'Reject',

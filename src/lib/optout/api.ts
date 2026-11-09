@@ -4,9 +4,11 @@ import { classifyOptOutUrls } from './urls'
 
 export type OptOutRequest = {
   id: string
+  status: 'pending' | 'approved'
   listingUrls: string[]
   comune: string | null
   contactEmail: string | null
+  ownerConfirmed: boolean
   createdAt: string
 }
 
@@ -35,8 +37,8 @@ function urlList(value: Json | undefined): string[] {
 export async function submitSellerOptOut(input: OptOutSubmit): Promise<void> {
   const { error } = await supabase.rpc('submit_seller_opt_out', {
     p_listing_urls: input.urls,
-    p_comune: input.comune.trim() ? input.comune.trim() : undefined,
-    p_contact_email: input.email.trim() ? input.email.trim() : undefined,
+    p_comune: input.comune.trim(),
+    p_contact_email: input.email.trim(),
     p_confirmed: input.confirmed,
     p_company: input.company,
   })
@@ -62,13 +64,17 @@ export async function fetchOptOutQueue(): Promise<OptOutRequest[]> {
     if (!row) continue
     const id = text(row.id)
     const createdAt = text(row.created_at)
+    const status = text(row.status)
     const listingUrls = urlList(row.listing_urls)
     if (!id || !createdAt || listingUrls.length === 0) continue
+    if (status !== 'pending' && status !== 'approved') continue
     rows.push({
       id,
+      status,
       listingUrls,
       comune: text(row.comune),
       contactEmail: text(row.contact_email),
+      ownerConfirmed: row.owner_confirmed === true,
       createdAt,
     })
   }
@@ -88,5 +94,10 @@ export async function decideOptOut(
     p_decision: decision,
     p_canonical_urls: decision === 'approved' ? canonical : undefined,
   })
+  if (error) throw error
+}
+
+export async function restoreOptOut(requestId: string): Promise<void> {
+  const { error } = await supabase.rpc('restore_seller_opt_out', { p_request_id: requestId })
   if (error) throw error
 }
