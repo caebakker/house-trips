@@ -4,6 +4,8 @@ import { AuthProvider, useAuth } from './auth/AuthProvider'
 import SignIn from './pages/SignIn'
 import Trips from './pages/Trips'
 import Terms from './pages/Terms'
+import OptOut from './pages/OptOut'
+import { SiteFooter } from './components/SiteFooter'
 import { m } from './i18n/t'
 
 const TripDetail = lazy(() => import('./pages/TripDetail'))
@@ -12,8 +14,10 @@ const ListingFormPage = lazy(() => import('./pages/ListingFormPage'))
 const AdminQueue = lazy(() => import('./pages/AdminQueue'))
 const AdminCredits = lazy(() => import('./pages/AdminCredits'))
 const TripPlan = lazy(() => import('./pages/TripPlan'))
+const AdminOptOuts = lazy(() => import('./pages/AdminOptOuts'))
 const DevPreview = import.meta.env.DEV ? lazy(() => import('./dev/M2Preview')) : null
 const DevPlan = import.meta.env.DEV ? lazy(() => import('./dev/M3Preview')) : null
+const DevOptOut = import.meta.env.DEV ? lazy(() => import('./dev/OptOutPreview')) : null
 
 function RequireAuth({ children }: { children: ReactNode }) {
   const { session, loading } = useAuth()
@@ -30,10 +34,13 @@ export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <Suspense fallback={<Loading />}>
+        <div className="flex min-h-svh flex-col bg-stone-50">
+          <div className="flex-1">
+            <Suspense fallback={<Loading />}>
           <Routes>
             <Route path="/sign-in" element={<SignIn />} />
             <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy/opt-out" element={<OptOut />} />
             <Route
               path="/trips"
               element={
@@ -106,11 +113,23 @@ export default function App() {
                 </RequireAuth>
               }
             />
+            <Route
+              path="/admin/opt-outs"
+              element={
+                <RequireAuth>
+                  <AdminOptOuts />
+                </RequireAuth>
+              }
+            />
             {DevPreview && <Route path="/dev/m2" element={<DevPreview />} />}
             {DevPlan && <Route path="/dev/m3" element={<DevPlan />} />}
+            {DevOptOut && <Route path="/dev/opt-out" element={<DevOptOut />} />}
             <Route path="*" element={<Navigate to="/trips" replace />} />
           </Routes>
-        </Suspense>
+            </Suspense>
+          </div>
+          <SiteFooter />
+        </div>
       </BrowserRouter>
     </AuthProvider>
   )

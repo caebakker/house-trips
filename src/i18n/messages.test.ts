@@ -13,4 +13,15 @@ describe('messages', () => {
   it('uses UK English punctuation in the copy', () => {
     expect(JSON.stringify(messages.en)).not.toMatch(/[—–]/)
   })
+
+  it('explains the opt-out without mentioning a fine', () => {
+    const copy = JSON.stringify({
+      terms: messages.en.terms,
+      optOut: messages.en.optOut,
+      unavailable: messages.en.verification.unavailable,
+    }).toLowerCase()
+    expect(copy).not.toContain('fine')
+    expect(messages.en.verification.unavailable).toBe("This property can't be located.")
+    expect(messages.en.terms.optOutLink.length).toBeGreaterThan(0)
+  })
 })

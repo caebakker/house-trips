@@ -23,6 +23,7 @@ type Props = {
   initialAgentPhone: string
   submitting: boolean
   formError: string | null
+  locationBlocked?: boolean
   onSubmit: (values: ListingFormValues) => void
   onCancel: () => void
 }
@@ -50,6 +51,7 @@ export function ListingForm({
   initialAgentPhone,
   submitting,
   formError,
+  locationBlocked = false,
   onSubmit,
   onCancel,
 }: Props) {
@@ -105,7 +107,7 @@ export function ListingForm({
     const next: FieldErrors = {}
     if (mode === 'new' && !canonicaliseListingUrl(url)) next.url = m.listingForm.errors.url
     if (!comune) next.comune = m.listingForm.errors.comune
-    if (address.trim().length > 300) next.address = m.listingForm.errors.address
+    if (!locationBlocked && address.trim().length > 300) next.address = m.listingForm.errors.address
     if (agentName.trim().length > 200) next.agentName = m.listingForm.errors.agentName
     if (agentEmail.trim() && (agentEmail.trim().length > 320 || !EMAIL.test(agentEmail.trim()))) {
       next.agentEmail = m.listingForm.errors.agentEmail
@@ -114,7 +116,7 @@ export function ListingForm({
     setErrors(next)
     if (Object.keys(next).length > 0 || !comune) return
 
-    const trimmedAddress = address.trim()
+    const trimmedAddress = locationBlocked ? '' : address.trim()
     onSubmit({
       url,
       comune,
@@ -166,6 +168,10 @@ export function ListingForm({
         <ComuneAutocomplete value={comune} onChange={setComune} error={errors.comune} />
       </Field>
 
+      {locationBlocked ? (
+        <p className="text-sm leading-relaxed text-stone-700">{m.verification.unavailable}</p>
+      ) : (
+      <>
       <Field
         label={m.listingForm.address}
         htmlFor="address"
@@ -234,6 +240,8 @@ export function ListingForm({
           </div>
         )}
       </div>
+      </>
+      )}
 
       <fieldset className="flex flex-col gap-3">
         <legend className="text-sm font-medium text-stone-800">{m.listingForm.agentLegend}</legend>

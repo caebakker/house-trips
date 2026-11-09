@@ -40,11 +40,14 @@ export function AppHeader() {
       <Link to="/trips" className="text-base font-semibold text-stone-900">
         {m.appName}
       </Link>
-      <nav className="flex items-center gap-4 text-sm">
+      <nav className="flex flex-wrap items-center justify-end gap-x-4 gap-y-1 text-sm">
         {checked && isAdmin && (
           <>
             <Link to="/admin/queue" className="text-stone-600 hover:text-stone-900">
               {m.nav.queue}
+            </Link>
+            <Link to="/admin/opt-outs" className="text-stone-600 hover:text-stone-900">
+              {m.nav.optOuts}
             </Link>
             <Link to="/admin/credits" className="text-stone-600 hover:text-stone-900">
               {m.nav.credits}

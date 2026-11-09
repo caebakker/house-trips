@@ -23,6 +23,7 @@ export function ListingVerification({ listingStatus, rows, credits, busy, error,
       {status === 'requested' && <p className="mt-1 text-sm text-stone-700">{m.verification.requested}</p>}
       {status === 'found' && <p className="mt-1 text-sm text-stone-700">{m.verification.found}</p>}
       {status === 'not_found' && <p className="mt-1 text-sm text-stone-700">{m.verification.notFound}</p>}
+      {status === 'unavailable' && <p className="mt-1 text-sm text-stone-700">{m.verification.unavailable}</p>}
       {canAsk && credits === 0 && <p className="mt-1 text-sm text-stone-600">{m.verification.noCredits}</p>}
       {canAsk && credits != null && credits > 0 && <p className="mt-1 text-sm text-stone-600">{cost}</p>}
       {canAsk && (

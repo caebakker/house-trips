@@ -41,9 +41,7 @@ Drive times come from OpenRouteService when `ORS_API_KEY` is set on Netlify (a s
 
 A green pin, and the Apple Maps and Google Maps buttons, appear only for a listing this buyer paid to find: a `found` verification request they made, with an `unlock` ledger row and no refund. The buttons open the coordinates. The address is not written out. Every other listing is planned from the comune centre, or from an address the buyer typed. Buyers still cannot read `property_locations`.
 
-Seller opt-out is PR #5 (`20261109123722_seller_opt_out.sql`), not on main yet. The pin lookup checks `private.opted_out_properties` and `private.opted_out_urls` when those tables exist, and returns nothing for them. A listing with status `unavailable` is left out of the plan. After #5 merges, confirm a buyer who already unlocked a house gets no pin and no maps buttons once that house is approved for opt-out, including if a coordinate row were still present.
-
-Apply the new migration after the ones already on the live database. Do not re-apply `20261109121653_listing_portal_and_fk_indexes.sql`: that change is already live as version `20261109123133`. The file to apply is `supabase/migrations/20261109154500_trip_scheduler.sql`.
+The pin lookup checks `private.opted_out_properties` and `private.opted_out_urls` when those tables exist, and returns nothing for them. A listing with status `unavailable` is left out of the plan. Approving an opt-out removes the pin, and a coordinate row put back still stays hidden.
 
 ## Imagery
 
@@ -61,7 +59,7 @@ Parcel lines appear when you zoom in. They are a guide on top of the imagery, no
 
 ## Email
 
-Found and not found write a row to `notification_outbox`. Nothing is sent.
+Found, not found, and a seller opt-out decision write a row to `notification_outbox`. Nothing is sent.
 
 The stub is `supabase/functions/send-notifications`. It returns immediately unless `EMAIL_ENABLED=true`, and even then it does not call a provider.
 
@@ -76,6 +74,16 @@ To switch it on later:
 The message tells the buyer which trip and comune, and links the listing they pasted. It does not include coordinates, a typed address, or the internal note.
 
 The comune autocomplete uses a derived ISTAT dataset. Source and licence: `src/data/COMUNI.md`.
+
+## Seller opt-out
+
+An owner, or someone they have authorised, can ask us to stop locating a property at `/privacy/opt-out`. No account is needed. Approve or reject the request at `/admin/opt-outs`.
+
+Approving removes the stored pin, closes an open location check as not found (the credit is refunded), and refuses later checks for that listing and for any house already linked to it. Buyers see "This property can't be located." If the requester left an email, a short note is queued in `notification_outbox` and is not sent.
+
+The scheduler migration is already live as `20261109140801_trip_scheduler.sql`. Apply only the opt-out file after that:
+
+`supabase/migrations/20261109170000_seller_opt_out.sql`
 
 ## Database
 

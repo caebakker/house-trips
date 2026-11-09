@@ -88,7 +88,7 @@ export default function TripDetail() {
         lng: listing.approxLng,
         radiusM: listing.approxRadiusM,
         pin:
-          listing.givenLat != null && listing.givenLng != null
+          listing.status !== 'unavailable' && listing.givenLat != null && listing.givenLng != null
             ? { lat: listing.givenLat, lng: listing.givenLng }
             : null,
       })),
@@ -140,7 +140,9 @@ export default function TripDetail() {
             ? m.verification.noCredits
             : reason === 'already'
               ? m.verification.already
-              : m.verification.saveError,
+              : reason === 'unavailable'
+                ? m.verification.unavailable
+                : m.verification.saveError,
       })
     } finally {
       setRequestingId(null)
@@ -234,7 +236,8 @@ export default function TripDetail() {
                 ) : (
                   <ol className="mt-3 flex flex-col gap-3">
                     {listings.map((listing, index) => {
-                      const hasPin = listing.givenLat != null && listing.givenLng != null
+                      const blocked = listing.status === 'unavailable'
+                      const hasPin = !blocked && listing.givenLat != null && listing.givenLng != null
                       const portal = portalLabel(listing.portal, listing.canonicalUrl)
                       const phone = listing.agentPhone ? phoneHref(listing.agentPhone) : null
                       const selected = selectedId === listing.id
@@ -263,7 +266,7 @@ export default function TripDetail() {
                                 <p className="mt-1 text-sm text-stone-700">
                                   {hasPin ? m.trip.addressYouAdded : m.trip.approximateArea}
                                 </p>
-                                {listing.givenAddress && (
+                                {!blocked && listing.givenAddress && (
                                   <p className="text-sm text-stone-700">{listing.givenAddress}</p>
                                 )}
                                 {(listing.agentName || listing.agentEmail || listing.agentPhone) && (
