@@ -42,12 +42,12 @@ describe('canonicaliseListingUrl', () => {
     )
   })
 
-  it('canonicalises generic URLs without treating them as a portal', () => {
+  it('canonicalises generic URLs and records them as other', () => {
     const left = 'https://www.Example.com/path/?b=2&utm_medium=email&a=1#section'
     const right = 'http://example.com/path?a=1&b=2'
     expect(canonical(left)).toBe('https://example.com/path?a=1&b=2')
     expect(canonical(right)).toBe(canonical(left))
-    expect(canonicaliseListingUrl(left)?.portal).toBe('')
+    expect(canonicaliseListingUrl(left)?.portal).toBe('other')
   })
 
   it('keeps meaningful query parameters and drops tracking ones', () => {
@@ -60,7 +60,9 @@ describe('canonicaliseListingUrl', () => {
     expect(canonical('https://www.immobiliare.it/vendita-case/cuneo/?utm_source=share')).toBe(
       'https://immobiliare.it/vendita-case/cuneo',
     )
-    expect(canonicaliseListingUrl('https://www.immobiliare.it/vendita-case/cuneo/')?.portal).toBe('')
+    expect(canonicaliseListingUrl('https://www.immobiliare.it/vendita-case/cuneo/')?.portal).toBe(
+      'other',
+    )
   })
 
   it('is stable when run again on its own result', () => {
