@@ -626,7 +626,7 @@ export type Database = {
         }[]
       }
       close_verification_not_found: {
-        Args: { p_note?: string; p_request_id: string }
+        Args: { p_kind?: string; p_note?: string; p_request_id: string }
         Returns: undefined
       }
       credit_balance: { Args: never; Returns: number }
@@ -668,12 +668,16 @@ export type Database = {
         }
         Returns: Json
       }
+      restore_seller_opt_out: {
+        Args: { p_request_id: string }
+        Returns: Json
+      }
       submit_seller_opt_out: {
         Args: {
           p_company?: string
-          p_comune?: string
+          p_comune: string
           p_confirmed: boolean
-          p_contact_email?: string
+          p_contact_email: string
           p_listing_urls: string[]
         }
         Returns: Json

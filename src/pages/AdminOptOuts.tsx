@@ -4,7 +4,7 @@ import { useIsAdmin } from '../auth/useIsAdmin'
 import { AppHeader } from '../components/AppHeader'
 import { AdminOptOutScreen } from '../components/AdminOptOutScreen'
 import { buttonSecondary } from '../components/ui'
-import { decideOptOut, fetchOptOutQueue, type OptOutRequest } from '../lib/optout/api'
+import { decideOptOut, fetchOptOutQueue, restoreOptOut, type OptOutRequest } from '../lib/optout/api'
 import { m } from '../i18n/t'
 
 export default function AdminOptOuts() {
@@ -76,6 +76,14 @@ export default function AdminOptOuts() {
       items={items}
       onDecide={async (request, decision) => {
         await decideOptOut(request, decision)
+        setItems((current) => {
+          const rows = current ?? []
+          if (decision === 'rejected') return rows.filter((row) => row.id !== request.id)
+          return rows.map((row) => (row.id === request.id ? { ...row, status: 'approved' } : row))
+        })
+      }}
+      onRestore={async (request) => {
+        await restoreOptOut(request.id)
         setItems((current) => (current ?? []).filter((row) => row.id !== request.id))
       }}
     />
