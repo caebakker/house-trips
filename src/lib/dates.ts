@@ -19,6 +19,25 @@ export function formatTripDate(isoDate: string): string {
   }).format(new Date(`${isoDate}T12:00:00Z`))
 }
 
+export function eachDate(startIso: string, endIso: string): string[] {
+  const dates: string[] = []
+  let cursor = startIso
+  while (cursor <= endIso && dates.length <= 61) {
+    dates.push(cursor)
+    cursor = addDays(cursor, 1)
+  }
+  return dates
+}
+
+export function formatDayHeading(isoDate: string): string {
+  return new Intl.DateTimeFormat('en-GB', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+    timeZone: 'Europe/Rome',
+  }).format(new Date(`${isoDate}T12:00:00Z`))
+}
+
 export function formatHours(minutes: number): string {
   const hours = minutes / 60
   return Number.isInteger(hours) ? String(hours) : hours.toFixed(1)

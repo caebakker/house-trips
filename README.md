@@ -33,6 +33,18 @@ npm run test:rls
 
 That needs local PostgreSQL. It does not touch the hosted database.
 
+## Drive-by plan
+
+Open a trip and choose **Plan the drive-by**. Set a start (a place you look up, or a pin on the map). The plan orders the listings across the trip dates, keeps each visit in daylight, pauses for lunch (12:30 to 15:00 unless you change it), and stays within the daily driving limit. You can move a listing to another day, change the order, lock one so **Plan again** leaves it put, and open the day's route in Google Maps.
+
+Drive times come from OpenRouteService when `ORS_API_KEY` is set on Netlify (a server variable, not a `VITE_` one). Create a free key at [account.heigit.org](https://account.heigit.org). With no key, or if the service does not answer, times are straight-line distance times 1.4 at 45 km/h. The key never reaches the browser. Calls stay inside the free matrix limits: one request for up to 50 locations, then 25 by 25 tiles, and no call above 75 locations.
+
+A green pin, and the Apple Maps and Google Maps buttons, appear only for a listing this buyer paid to find: a `found` verification request they made, with an `unlock` ledger row and no refund. The buttons open the coordinates. The address is not written out. Every other listing is planned from the comune centre, or from an address the buyer typed. Buyers still cannot read `property_locations`.
+
+Seller opt-out is PR #5 (`20261109123722_seller_opt_out.sql`), not on main yet. The pin lookup checks `private.opted_out_properties` and `private.opted_out_urls` when those tables exist, and returns nothing for them. A listing with status `unavailable` is left out of the plan. After #5 merges, confirm a buyer who already unlocked a house gets no pin and no maps buttons once that house is approved for opt-out, including if a coordinate row were still present.
+
+Apply the new migration after the ones already on the live database. Do not re-apply `20261109121653_listing_portal_and_fk_indexes.sql`: that change is already live as version `20261109123133`. The file to apply is `supabase/migrations/20261109154500_trip_scheduler.sql`.
+
 ## Imagery
 
 The admin map defaults to Esri World Imagery:

@@ -211,6 +211,9 @@ export default function TripDetail() {
                 </p>
               </div>
               <div className="flex flex-col gap-2 sm:flex-row">
+                <Link to={`/trips/${trip.id}/plan`} className={buttonPrimary}>
+                  {m.plan.open}
+                </Link>
                 <Link to={`/trips/${trip.id}/edit`} className={buttonSecondary}>
                   {m.trip.edit}
                 </Link>
