@@ -88,5 +88,6 @@ fi
 
 psql_db -f "$root/supabase/tests/portal_tidy.sql"
 psql_db -f "$root/supabase/tests/rls_m2.sql"
+psql_db -f "$root/supabase/tests/rls_m3.sql"
 sudo -u postgres psql -v ON_ERROR_STOP=1 -c "drop database if exists ${db};"
 echo "RLS tests passed"

@@ -92,6 +92,20 @@ export function rankAddressHits(hits: AddressHit[], comune: Comune): AddressHit[
  * Look up an address the buyer typed, biased toward the chosen comune.
  * OpenStreetMap data via the public Photon API. The buyer confirms the pin.
  */
+/** Look up a town or place in Italy for the day's start point. */
+export async function lookupPlace(query: string): Promise<AddressHit[]> {
+  const url = new URL(PHOTON_URL)
+  url.searchParams.set('q', `${query.trim()}, Italy`)
+  url.searchParams.set('lat', '42.5')
+  url.searchParams.set('lon', '12.5')
+  url.searchParams.set('limit', '5')
+  url.searchParams.set('lang', 'en')
+  const response = await fetch(url, { signal: AbortSignal.timeout(8000) })
+  if (!response.ok) throw new Error('address lookup failed')
+  const body: unknown = await response.json()
+  return addressHitsFromPhoton(body).slice(0, 5)
+}
+
 export async function lookupAddress(address: string, comune: Comune): Promise<AddressHit[]> {
   const query = `${address.trim()}, ${comune.name}, ${comune.province}, Italy`
   const url = new URL(PHOTON_URL)

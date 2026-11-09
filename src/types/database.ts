@@ -456,6 +456,86 @@ export type Database = {
           },
         ]
       }
+      schedules: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          plan: Json
+          trip_id: string
+          version: number
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          plan: Json
+          trip_id: string
+          version: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          plan?: Json
+          trip_id?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "schedules_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "schedules_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trip_starts: {
+        Row: {
+          label: string
+          lat: number
+          lng: number
+          lunch_end_minute: number
+          lunch_start_minute: number
+          trip_id: string
+          updated_at: string
+        }
+        Insert: {
+          label: string
+          lat: number
+          lng: number
+          lunch_end_minute?: number
+          lunch_start_minute?: number
+          trip_id: string
+          updated_at?: string
+        }
+        Update: {
+          label?: string
+          lat?: number
+          lng?: number
+          lunch_end_minute?: number
+          lunch_start_minute?: number
+          trip_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_starts_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: true
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       verification_requests: {
         Row: {
           admin_notes: string | null
@@ -536,6 +616,14 @@ export type Database = {
       }
       admin_recent_grants: { Args: never; Returns: Json }
       admin_verification_queue: { Args: never; Returns: Json }
+      buyer_unlocked_pins: {
+        Args: { p_trip_id: string }
+        Returns: {
+          lat: number
+          lng: number
+          trip_listing_id: string
+        }[]
+      }
       credit_balance: { Args: never; Returns: number }
       enqueue_verification_email: {
         Args: { p_kind: string; p_request_id: string }
@@ -555,6 +643,10 @@ export type Database = {
       request_verification: {
         Args: { p_trip_listing_id: string }
         Returns: string
+      }
+      save_schedule: {
+        Args: { p_plan: Json; p_trip_id: string }
+        Returns: number
       }
       resolve_verification: {
         Args: {

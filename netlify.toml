@@ -9,6 +9,13 @@
   status = 200
   force = true
 
+# Road times. The ORS key stays in the function environment.
+[[redirects]]
+  from = "/api/route-matrix"
+  to = "/.netlify/functions/route-matrix"
+  status = 200
+  force = true
+
 # SPA: let React Router handle every path.
 [[redirects]]
   from = "/*"
