@@ -10,4 +10,14 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['maplibre-gl'],
   },
+  server: {
+    proxy: {
+      // Dev only. Production uses the admin-checked Netlify function.
+      '/api/cadastral-wms': {
+        target: 'https://wms.cartografia.agenziaentrate.gov.it',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/cadastral-wms/, '/inspire/wms/ows01.php'),
+      },
+    },
+  },
 })

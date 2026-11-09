@@ -2,11 +2,20 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { AgencyNotice } from '../components/AgencyNotice'
 import { AppHeader } from '../components/AppHeader'
+import { ListingVerification } from '../components/ListingVerification'
 import { TripMap, type MapStop } from '../components/TripMap'
 import { buttonPrimary, buttonQuiet, buttonSecondary } from '../components/ui'
 import { formatHours, formatTripDate } from '../lib/dates'
 import { portalLabel, priorityLabel } from '../lib/listings/portal'
 import { getTrip, listTripListings, removeTripListing, type Trip, type TripListing } from '../lib/trips/api'
+import {
+  fetchCreditBalance,
+  listVerificationStatuses,
+  notifyCreditsChanged,
+  requestVerification,
+  type VerificationRow,
+} from '../lib/verification/api'
+import { verificationFailure } from '../lib/verification/status'
 import { m, fill } from '../i18n/t'
 
 function sortListings(listings: TripListing[]): TripListing[] {
@@ -33,6 +42,11 @@ export default function TripDetail() {
   const [confirmRemoveId, setConfirmRemoveId] = useState<string | null>(null)
   const [removeError, setRemoveError] = useState<string | null>(null)
   const [reloadKey, setReloadKey] = useState(0)
+  const [credits, setCredits] = useState<number | null>(null)
+  const [creditsError, setCreditsError] = useState(false)
+  const [verificationRows, setVerificationRows] = useState<VerificationRow[]>([])
+  const [requestingId, setRequestingId] = useState<string | null>(null)
+  const [requestError, setRequestError] = useState<{ id: string; message: string } | null>(null)
 
   useEffect(() => {
     document.title = trip ? `${trip.name} · ${m.appName}` : m.appName
@@ -82,9 +96,56 @@ export default function TripDetail() {
   )
 
   useEffect(() => {
+    if (!listings) return
+    let cancelled = false
+    Promise.all([fetchCreditBalance(), listVerificationStatuses(listings.map((listing) => listing.id))])
+      .then(([balance, rows]) => {
+        if (cancelled) return
+        setCredits(balance)
+        setVerificationRows(rows)
+        setCreditsError(false)
+      })
+      .catch((err: unknown) => {
+        console.error(err)
+        if (!cancelled) setCreditsError(true)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [listings])
+
+  useEffect(() => {
     if (!selectedId) return
     document.getElementById(`listing-${selectedId}`)?.scrollIntoView({ block: 'nearest' })
   }, [selectedId])
+
+  async function onRequestLocation(id: string) {
+    setRequestingId(id)
+    setRequestError(null)
+    try {
+      await requestVerification(id)
+      setVerificationRows((current) => [
+        ...current,
+        { id: `local-${id}`, tripListingId: id, status: 'queued', createdAt: new Date().toISOString() },
+      ])
+      setCredits((current) => (current == null ? current : Math.max(0, current - 1)))
+      notifyCreditsChanged()
+    } catch (err) {
+      console.error(err)
+      const reason = verificationFailure(err instanceof Error ? err.message : '')
+      setRequestError({
+        id,
+        message:
+          reason === 'no_credits'
+            ? m.verification.noCredits
+            : reason === 'already'
+              ? m.verification.already
+              : m.verification.saveError,
+      })
+    } finally {
+      setRequestingId(null)
+    }
+  }
 
   async function onRemove(id: string) {
     setRemoveError(null)
@@ -162,6 +223,7 @@ export default function TripDetail() {
             <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:items-start">
               <section className="order-2 lg:order-1">
                 <h2 className="text-lg font-semibold text-stone-900">{m.trip.listingsHeading}</h2>
+                {creditsError && <p className="mt-2 text-sm text-red-700">{m.verification.loadError}</p>}
                 {listings.length === 0 ? (
                   <p className="mt-3 rounded-lg border border-dashed border-stone-300 p-6 text-center text-stone-600">
                     {m.trip.empty}
@@ -253,6 +315,14 @@ export default function TripDetail() {
                                     {m.trip.removeListing}
                                   </button>
                                 </div>
+                                <ListingVerification
+                                  listingStatus={listing.status}
+                                  rows={verificationRows.filter((row) => row.tripListingId === listing.id)}
+                                  credits={credits}
+                                  busy={requestingId === listing.id}
+                                  error={requestError?.id === listing.id ? requestError.message : null}
+                                  onRequest={() => void onRequestLocation(listing.id)}
+                                />
                                 {confirmRemoveId === listing.id && (
                                   <div className="mt-2 rounded-lg bg-red-50 p-3">
                                     <p className="text-sm text-red-900">{m.trip.confirmRemove}</p>

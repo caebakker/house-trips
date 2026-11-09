@@ -243,20 +243,223 @@ export type Database = {
           },
         ]
       }
+      credit_ledger: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          delta: number
+          id: string
+          note: string | null
+          reason: Database["public"]["Enums"]["credit_reason"]
+          stripe_payment_intent: string | null
+          trip_listing_id: string | null
+          user_id: string
+          verification_request_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          delta: number
+          id?: string
+          note?: string | null
+          reason: Database["public"]["Enums"]["credit_reason"]
+          stripe_payment_intent?: string | null
+          trip_listing_id?: string | null
+          user_id: string
+          verification_request_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          delta?: number
+          id?: string
+          note?: string | null
+          reason?: Database["public"]["Enums"]["credit_reason"]
+          stripe_payment_intent?: string | null
+          trip_listing_id?: string | null
+          user_id?: string
+          verification_request_id?: string | null
+        }
+        Relationships: []
+      }
+      listing_properties: {
+        Row: {
+          created_at: string
+          listing_id: string
+          property_id: string
+        }
+        Insert: {
+          created_at?: string
+          listing_id: string
+          property_id: string
+        }
+        Update: {
+          created_at?: string
+          listing_id?: string
+          property_id?: string
+        }
+        Relationships: []
+      }
+      notification_outbox: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          kind: string
+          sent_at: string | null
+          status: string
+          subject: string
+          to_email: string
+          user_id: string
+          verification_request_id: string | null
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          kind: string
+          sent_at?: string | null
+          status?: string
+          subject: string
+          to_email: string
+          user_id: string
+          verification_request_id?: string | null
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          sent_at?: string | null
+          status?: string
+          subject?: string
+          to_email?: string
+          user_id?: string
+          verification_request_id?: string | null
+        }
+        Relationships: []
+      }
+      properties: {
+        Row: {
+          created_at: string
+          id: string
+          source: Database["public"]["Enums"]["property_source"]
+          verified_at: string
+          verified_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          source?: Database["public"]["Enums"]["property_source"]
+          verified_at?: string
+          verified_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          source?: Database["public"]["Enums"]["property_source"]
+          verified_at?: string
+          verified_by?: string | null
+        }
+        Relationships: []
+      }
+      property_locations: {
+        Row: {
+          lat: number
+          lng: number
+          property_id: string
+        }
+        Insert: {
+          lat: number
+          lng: number
+          property_id: string
+        }
+        Update: {
+          lat?: number
+          lng?: number
+          property_id?: string
+        }
+        Relationships: []
+      }
+      verification_requests: {
+        Row: {
+          admin_notes: string | null
+          candidates: Json
+          created_at: string
+          id: string
+          listing_id: string
+          property_id: string | null
+          requested_by: string
+          resolved_at: string | null
+          status: Database["public"]["Enums"]["verification_status"]
+          trip_listing_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          candidates?: Json
+          created_at?: string
+          id?: string
+          listing_id: string
+          property_id?: string | null
+          requested_by: string
+          resolved_at?: string | null
+          status?: Database["public"]["Enums"]["verification_status"]
+          trip_listing_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          candidates?: Json
+          created_at?: string
+          id?: string
+          listing_id?: string
+          property_id?: string | null
+          requested_by?: string
+          resolved_at?: string | null
+          status?: Database["public"]["Enums"]["verification_status"]
+          trip_listing_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      admin_credit_balance: { Args: { p_email: string }; Returns: number }
+      admin_properties_near: {
+        Args: { p_lat: number; p_listing_id?: string; p_lng: number }
+        Returns: Json
+      }
+      admin_recent_grants: { Args: never; Returns: Json }
+      admin_verification_queue: { Args: never; Returns: Json }
+      credit_balance: { Args: never; Returns: number }
       ensure_listing: {
         Args: { p_canonical_url: string; p_portal: string; p_url: string }
         Returns: string
       }
+      grant_credits: {
+        Args: { p_amount: number; p_email: string; p_note?: string }
+        Returns: number
+      }
       is_admin: { Args: never; Returns: boolean }
       is_trip_member: { Args: { p_trip_id: string }; Returns: boolean }
       is_trip_owner: { Args: { p_trip_id: string }; Returns: boolean }
+      request_verification: { Args: { p_trip_listing_id: string }; Returns: string }
+      resolve_verification: {
+        Args: {
+          p_lat?: number
+          p_lng?: number
+          p_note?: string
+          p_outcome: string
+          p_property_id?: string
+          p_request_id: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
+      credit_reason: "purchase" | "unlock" | "refund" | "grant"
+      property_source: "ai" | "manual" | "agent"
       trip_listing_status:
         | "approximate"
         | "address_given"
@@ -265,6 +468,7 @@ export type Database = {
         | "not_found"
       trip_member_role: "owner" | "partner"
       user_role: "buyer" | "admin"
+      verification_status: "queued" | "in_review" | "found" | "not_found"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -392,6 +596,8 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      credit_reason: ["purchase", "unlock", "refund", "grant"],
+      property_source: ["ai", "manual", "agent"],
       trip_listing_status: [
         "approximate",
         "address_given",
@@ -401,6 +607,7 @@ export const Constants = {
       ],
       trip_member_role: ["owner", "partner"],
       user_role: ["buyer", "admin"],
+      verification_status: ["queued", "in_review", "found", "not_found"],
     },
   },
 } as const
